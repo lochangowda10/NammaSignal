@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # NammaSignal API & Intelligence Engine
+  # ----------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nammasignal-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - OPENSEARCH_HOSTS=http://opensearch:9200
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    volumes:
+      - ./persistence:/app/persistence
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # OpenSearch (Geospatial & Semantic Cluster)
+  # ----------------------------------------------------------------------------
+  opensearch:
+    image: opensearchproject/opensearch:2.18.0
+    container_name: nammasignal-opensearch
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q 'green\\|yellow'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    restart: unless-stopped
+
+volumes:
+  opensearch-data:
+    driver: local

@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NammaSignal — Bengaluru Road Hazard Evidence Fusion Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN for instant, zero-build rendering -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#10b981',
+              600: '#059669',
+            },
+            cedar: {
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #090d16;
+      color: #f1f5f9;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .glass-nav {
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .pulse-alert {
+      animation: pulse-subtle 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-500/20 selection:text-emerald-400">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="sticky top-0 z-50 glass-nav px-4 lg:px-8 py-3.5 flex items-center justify-between">
+    <div class="flex items-center space-x-3.5">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-0.5 shadow-lg shadow-emerald-500/20 flex items-center justify-center">
+        <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+          <i data-lucide="waves" class="w-5 h-5 text-emerald-400"></i>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+            NammaSignal
+          </h1>
+          <span class="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">
+            Evidence Fusion Engine
+          </span>
+        </div>
+        <p class="text-xs text-slate-400 font-medium">
+          Bengaluru Road Hazard Intelligence &bull; Build It Track
+        </p>
+      </div>
+    </div>
+
+    <!-- Center Badges -->
+    <div class="hidden md:flex items-center space-x-3">
+      <div class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs text-slate-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="font-medium">AWS Cedar Zero-Trust:</span>
+        <span class="text-emerald-400 font-mono font-semibold">ACTIVE (Deny-by-Default)</span>
+      </div>
+      <div class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs text-slate-300">
+        <i data-lucide="cpu" class="w-3.5 h-3.5 text-purple-400"></i>
+        <span class="font-medium">AWS Strands Agents:</span>
+        <span class="text-purple-400 font-mono font-semibold">Multi-Agent</span>
+      </div>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="flex items-center space-x-2.5">
+      <button onclick="openSubmitModal()" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition flex items-center space-x-1.5 shadow-md shadow-emerald-500/20">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <span>Report Hazard</span>
+      </button>
+      <button onclick="triggerSimulationModal()" class="px-3.5 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 font-semibold text-xs transition flex items-center space-x-1.5">
+        <i data-lucide="play-circle" class="w-4 h-4"></i>
+        <span>Demo Simulation</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= SUB-HEADER / SIMULATION TICKER ================= -->
+  <div class="bg-slate-900/50 border-b border-slate-800/80 px-4 lg:px-8 py-2 flex flex-wrap items-center justify-between text-xs gap-3">
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-1.5 text-slate-400">
+        <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-500"></i>
+        <span>Simulated Clock:</span>
+        <span id="sim-clock-display" class="font-mono text-slate-200 font-medium">Syncing...</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="text-slate-500">&bull;</span>
+        <span class="text-slate-400">Simulation Scenario:</span>
+        <span id="scenario-step-pill" class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 font-medium border border-purple-500/20">
+          Silk Board Cloudburst (Ready)
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <button onclick="stepSimulation()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium border border-slate-700 transition flex items-center space-x-1">
+        <i data-lucide="fast-forward" class="w-3 h-3 text-emerald-400"></i>
+        <span>Next Demo Step</span>
+      </button>
+      <button onclick="advanceSimTime(30)" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium border border-slate-700 transition flex items-center space-x-1">
+        <i data-lucide="timer-reset" class="w-3 h-3 text-amber-400"></i>
+        <span>+30m Decay</span>
+      </button>
+      <button onclick="resetSimulation()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Reset Simulation">
+        <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= MAIN THREE-COLUMN WORKSPACE ================= -->
+  <main class="flex-1 px-4 lg:px-8 py-5 grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1720px] w-full mx-auto">
+    
+    <!-- ================= LEFT COLUMN: HAZARDS & HOTSPOTS (4 Cols) ================= -->
+    <section class="lg:col-span-4 flex flex-col space-y-4">
+      
+      <!-- Filter Bar -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+          <h2 class="font-bold text-sm tracking-tight text-white">Active Hazard Events</h2>
+          <span id="hazard-count-badge" class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-slate-800 text-slate-300 border border-slate-700">0</span>
+        </div>
+        <button onclick="fetchHazards()" class="text-slate-400 hover:text-white text-xs transition flex items-center space-x-1">
+          <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+
+      <!-- Hazard Cards Container -->
+      <div id="hazards-list" class="flex-1 space-y-3 overflow-y-auto max-h-[calc(100vh-210px)] pr-1">
+        <!-- Skeleton / Empty State -->
+        <div class="glass-card rounded-xl p-5 text-center text-slate-400 text-xs">
+          <i data-lucide="inbox" class="w-8 h-8 mx-auto text-slate-600 mb-2"></i>
+          <p class="font-medium text-slate-300">Loading Hazard Events...</p>
+          <p class="text-slate-500 mt-1">Connecting to NammaSignal Intelligence Pipeline</p>
+        </div>
+      </div>
+
+      <!-- Hotspots Quick Access -->
+      <div class="glass-card rounded-xl p-3.5">
+        <div class="flex items-center justify-between mb-2.5">
+          <span class="text-xs font-semibold text-slate-300 flex items-center space-x-1.5">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Bengaluru Monitored Hotspots</span>
+          </span>
+          <span class="text-[10px] text-slate-500 font-mono">11 Junctions</span>
+        </div>
+        <div id="hotspots-pill-container" class="flex flex-wrap gap-1.5">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= MIDDLE COLUMN: PROVENANCE & COMMUTER ADVISORY (5 Cols) ================= -->
+    <section class="lg:col-span-5 flex flex-col space-y-4">
+      
+      <!-- Commuter Advisory Box -->
+      <div id="advisory-card" class="glass-card rounded-xl p-5 border-l-4 border-l-amber-500 relative overflow-hidden">
+        <div class="flex items-start justify-between">
+          <div>
+            <span id="advisory-risk-badge" class="px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
+              ELEVATED RISK
+            </span>
+            <h3 id="advisory-headline" class="text-base font-extrabold text-white mt-2 tracking-tight">
+              Select a Hazard Event
+            </h3>
+            <p id="advisory-location" class="text-xs text-slate-400 mt-0.5 flex items-center space-x-1">
+              <i data-lucide="map-pin" class="w-3 h-3 text-slate-500"></i>
+              <span>Click on any hazard card to inspect its evidence provenance.</span>
+            </p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-semibold text-slate-500 block">Evidence Confidence</span>
+            <span id="advisory-confidence" class="text-xs font-bold text-emerald-400 font-mono">--</span>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-800/80">
+          <p id="advisory-guidance" class="text-xs text-slate-300 leading-relaxed font-medium">
+            NammaSignal synthesizes multi-source ground reports, official advisories, and photographic proof into a unified hazard assessment.
+          </p>
+        </div>
+
+        <!-- Time Decay Progress Gauge -->
+        <div class="mt-3.5 bg-slate-900/90 rounded-lg p-2.5 border border-slate-800">
+          <div class="flex items-center justify-between text-[11px] mb-1">
+            <span class="text-slate-400 font-medium flex items-center space-x-1">
+              <i data-lucide="hourglass" class="w-3 h-3 text-slate-500"></i>
+              <span>Exponential Time Decay</span>
+            </span>
+            <span id="freshness-tag" class="font-mono text-emerald-400 font-semibold">FRESH (< 15m)</span>
+          </div>
+          <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+            <div id="decay-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" style="width: 85%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Evidence Provenance Breakdown -->
+      <div class="glass-card rounded-xl p-5 flex-1 flex flex-col space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+            <h3 class="font-bold text-sm text-white">Why NammaSignal Assessed This</h3>
+          </div>
+          <span id="evidence-count-pill" class="text-xs text-slate-400 font-mono">0 Linked Observations</span>
+        </div>
+
+        <!-- Evidence Summary Matrix -->
+        <div class="grid grid-cols-4 gap-2 text-center">
+          <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2">
+            <span id="metric-citizens" class="block font-mono font-bold text-sm text-white">0</span>
+            <span class="text-[10px] text-slate-400 font-medium">Citizen Reports</span>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2">
+            <span id="metric-photos" class="block font-mono font-bold text-sm text-cyan-400">0</span>
+            <span class="text-[10px] text-slate-400 font-medium">Photos</span>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2">
+            <span id="metric-responders" class="block font-mono font-bold text-sm text-purple-400">0</span>
+            <span class="text-[10px] text-slate-400 font-medium">Responders</span>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2">
+            <span id="metric-authority" class="block font-mono font-bold text-sm text-emerald-400">0</span>
+            <span class="text-[10px] text-slate-400 font-medium">Authorities</span>
+          </div>
+        </div>
+
+        <!-- Why Bullets from Agent 2/3 -->
+        <div class="bg-slate-950/40 rounded-lg p-3 border border-slate-800/80">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Ground Evidence Points:</span>
+          <ul id="why-bullets-list" class="space-y-1.5 text-xs text-slate-300">
+            <li class="flex items-start space-x-2">
+              <span class="text-emerald-400 font-bold">&bull;</span>
+              <span>Awaiting selected hazard event to display provenance trail.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Detailed Observations Stream -->
+        <div class="flex-1 flex flex-col min-h-[220px]">
+          <span class="text-xs font-semibold text-slate-300 mb-2 flex items-center space-x-1.5">
+            <i data-lucide="git-commit" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span>Raw Evidence Stream (Immutable Log)</span>
+          </span>
+          <div id="observation-timeline" class="flex-1 space-y-2.5 overflow-y-auto max-h-[260px] pr-1">
+            <!-- Timeline entries populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= RIGHT COLUMN: SECURITY, CEDAR & CONTROLS (3 Cols) ================= -->
+    <section class="lg:col-span-3 flex flex-col space-y-4">
+      
+      <!-- AWS Cedar Authorization Inspector -->
+      <div class="glass-card rounded-xl p-4.5">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="shield-check" class="w-4 h-4 text-purple-400"></i>
+            <h3 class="font-bold text-sm text-white">AWS Cedar Policy Trace</h3>
+          </div>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-purple-500/10 text-purple-300 border border-purple-500/20">
+            Rust Engine
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-400 leading-normal mb-3">
+          Every submission, status override, and simulation action is verified server-side against formal Cedar policies.
+        </p>
+
+        <!-- Cedar Rules Summary -->
+        <div class="space-y-1.5 font-mono text-[10px] bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 text-slate-300">
+          <div class="flex items-center justify-between text-emerald-400">
+            <span>Role::"Citizen"</span>
+            <span>-> Submit, View</span>
+          </div>
+          <div class="flex items-center justify-between text-purple-400">
+            <span>Role::"VerifiedResponder"</span>
+            <span>-> Verify, Clear</span>
+          </div>
+          <div class="flex items-center justify-between text-cyan-400">
+            <span>Role::"OfficialAuthority"</span>
+            <span>-> Full Control</span>
+          </div>
+          <div class="flex items-center justify-between text-rose-400 border-t border-slate-800 pt-1 mt-1">
+            <span>Default Policy</span>
+            <span>DENY</span>
+          </div>
+        </div>
+
+        <!-- Latest Authorization Audit Item -->
+        <div class="mt-3 bg-slate-900/60 rounded-lg p-2.5 border border-slate-800/80">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="text-slate-400">Last Evaluation:</span>
+            <span id="cedar-last-decision" class="font-bold font-mono text-emerald-400">ALLOW</span>
+          </div>
+          <p id="cedar-last-reason" class="text-[11px] text-slate-300 mt-1 font-mono leading-tight truncate">
+            Permitted by Citizen submission policy
+          </p>
+        </div>
+      </div>
+
+      <!-- Responder Verification Action Card -->
+      <div class="glass-card rounded-xl p-4.5">
+        <div class="flex items-center space-x-2 mb-2">
+          <i data-lucide="badge-check" class="w-4 h-4 text-emerald-400"></i>
+          <h3 class="font-bold text-sm text-white">Responder Verification</h3>
+        </div>
+        <p class="text-[11px] text-slate-400 mb-3">
+          Simulate official status confirmation as a verified field officer or citizen.
+        </p>
+
+        <div class="space-y-2">
+          <button onclick="simulateVerification(true)" class="w-full py-2 px-3 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition flex items-center justify-center space-x-1.5">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+            <span>Verify as Traffic Police (Allow)</span>
+          </button>
+          <button onclick="simulateVerification(false)" class="w-full py-2 px-3 rounded-lg bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/20 text-xs font-medium transition flex items-center justify-center space-x-1.5">
+            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+            <span>Verify as Citizen (Triggers Deny)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Audit Stream -->
+      <div class="glass-card rounded-xl p-4.5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
+            <i data-lucide="activity" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span>System Audit Log</span>
+          </span>
+          <span class="text-[10px] text-slate-500 font-mono">Live</span>
+        </div>
+        <div id="audit-log-container" class="space-y-2 font-mono text-[10px] overflow-y-auto max-h-[160px] pr-1">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= SUBMIT OBSERVATION MODAL ================= -->
+  <div id="submit-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-slate-900 border border-slate-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="alert-circle" class="w-5 h-5 text-emerald-400"></i>
+          <h3 class="font-bold text-base text-white">Report Road Hazard / Waterlogging</h3>
+        </div>
+        <button onclick="closeSubmitModal()" class="text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="observation-form" onsubmit="handleObservationSubmit(event)" class="mt-4 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">What did you observe? (Vernacular / Slang supported)</label>
+          <textarea id="form-content" rows="3" required placeholder="e.g. Bro knee deep water near Silk Board underpass, cars turning around" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"></textarea>
+          <p class="text-[10px] text-slate-400 mt-1">AWS Strands Observation Interpreter will automatically extract hazard type, severity, and landmark coordinates.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Your Role</label>
+            <select id="form-role" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <option value="Citizen">Citizen (Public Contributor)</option>
+              <option value="VerifiedResponder">Verified Responder (BTP/BBMP)</option>
+              <option value="OfficialAuthority">Official Authority (Control Room)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Evidence Type</label>
+            <select id="form-evidence-type" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <option value="GROUND_OBSERVATION">Text Observation</option>
+              <option value="PHOTO">Photo / Visual Proof</option>
+              <option value="CLEARANCE_REPORT">Road Clearance (Water Drained)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Select Hotspot (Optional)</label>
+            <select id="form-hotspot-select" onchange="applyHotspotToForm()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <option value="">Auto-Detect from Text</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Photo URL (Optional)</label>
+            <input id="form-photo-url" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500" />
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end space-x-2">
+          <button type="button" onclick="closeSubmitModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition">Cancel</button>
+          <button type="submit" id="form-submit-btn" class="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-emerald-500/20">
+            <span>Submit Observation</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= CLIENT LOGIC JAVASCRIPT ================= -->
+  <script>
+    let activeHazards = [];
+    let selectedHazardId = null;
+    let canonicalLandmarks = [];
+
+    // Initialize Lucide icons
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      fetchLandmarks();
+      fetchHazards();
+      fetchSimulationState();
+      fetchAuditLogs();
+
+      // Poll updates every 4 seconds
+      setInterval(() => {
+        fetchHazards(false);
+        fetchSimulationState();
+      }, 4000);
+    });
+
+    async function fetchLandmarks() {
+      try {
+        const res = await fetch("/api/v1/landmarks");
+        if (res.ok) {
+          canonicalLandmarks = await res.json();
+          renderHotspotPills();
+          populateHotspotDropdown();
+        }
+      } catch (err) {
+        console.error("Failed to load landmarks", err);
+      }
+    }
+
+    function renderHotspotPills() {
+      const container = document.getElementById("hotspots-pill-container");
+      container.innerHTML = canonicalLandmarks.slice(0, 7).map(lm => `
+        <button onclick="fillSearchWithLandmark('${lm.name}')" class="px-2 py-1 rounded-md text-[10px] bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition">
+          ${lm.name.split('/')[0].trim()}
+        </button>
+      `).join("");
+    }
+
+    function populateHotspotDropdown() {
+      const sel = document.getElementById("form-hotspot-select");
+      canonicalLandmarks.forEach(lm => {
+        const opt = document.createElement("option");
+        opt.value = JSON.stringify(lm);
+        opt.textContent = lm.name;
+        sel.appendChild(opt);
+      });
+    }
+
+    function fillSearchWithLandmark(name) {
+      document.getElementById("form-content").value = `Water is knee deep near ${name}, traffic slow`;
+      openSubmitModal();
+    }
+
+    async function fetchHazards(selectFirst = true) {
+      try {
+        const res = await fetch("/api/v1/hazards");
+        if (res.ok) {
+          activeHazards = await res.json();
+          document.getElementById("hazard-count-badge").textContent = activeHazards.length;
+          renderHazardsList();
+
+          if (activeHazards.length > 0) {
+            if (selectFirst && !selectedHazardId) {
+              selectHazard(activeHazards[0].id);
+            } else if (selectedHazardId) {
+              // Refresh currently selected hazard
+              const current = activeHazards.find(h => h.id === selectedHazardId);
+              if (current) selectHazard(current.id);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching hazards:", err);
+      }
+    }
+
+    function renderHazardsList() {
+      const container = document.getElementById("hazards-list");
+      if (activeHazards.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card rounded-xl p-6 text-center text-slate-400 text-xs">
+            <i data-lucide="check-circle" class="w-8 h-8 mx-auto text-emerald-400 mb-2"></i>
+            <p class="font-medium text-slate-200">No Active Hazards Recorded</p>
+            <p class="text-slate-500 mt-1">All monitored corridors are currently reporting normal passability.</p>
+            <button onclick="stepSimulation()" class="mt-3 px-3 py-1.5 rounded-lg bg-purple-600/30 text-purple-300 text-[11px] font-semibold hover:bg-purple-600/40 border border-purple-500/30 transition">
+              Run Demo Simulation Step
+            </button>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = activeHazards.map(h => {
+        const ass = h.current_assessment;
+        const isSelected = h.id === selectedHazardId;
+        const riskColor = getRiskColor(ass ? ass.risk_level : "UNCERTAIN");
+
+        return `
+          <div onclick="selectHazard('${h.id}')" class="glass-card rounded-xl p-4 cursor-pointer transition border ${isSelected ? 'border-emerald-500 bg-slate-900/90 shadow-lg shadow-emerald-500/10' : 'border-slate-800/80 hover:border-slate-700'}">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${riskColor.badge}">
+                  ${ass ? ass.risk_level : 'UNCERTAIN'}
+                </span>
+                <h4 class="font-bold text-sm text-white mt-1.5">${h.primary_location.landmark_name || 'Corridor Corridor'}</h4>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-mono text-slate-400 block">${ass ? ass.freshness_status : 'STALE'}</span>
+                <span class="text-[10px] font-mono text-emerald-400 font-semibold">Score: ${ass ? ass.confidence_score : 0}</span>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-2 line-clamp-2">${ass ? ass.summary_advisory : 'Awaiting evidence interpretation.'}</p>
+            <div class="mt-3 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
+              <span>${h.observation_ids.length} linked observations</span>
+              <span>v${h.version} &bull; ${h.status}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    async function selectHazard(id) {
+      selectedHazardId = id;
+      renderHazardsList();
+
+      try {
+        const [hazardRes, evidenceRes] = await Promise.all([
+          fetch(`/api/v1/hazards/${id}`),
+          fetch(`/api/v1/hazards/${id}/evidence`)
+        ]);
+
+        if (hazardRes.ok && evidenceRes.ok) {
+          const hazard = await hazardRes.json();
+          const evidence = await evidenceRes.json();
+          renderAdvisoryAndEvidence(hazard, evidence);
+        }
+      } catch (err) {
+        console.error("Error inspecting hazard", err);
+      }
+    }
+
+    function renderAdvisoryAndEvidence(hazard, evidence) {
+      const ass = hazard.current_assessment;
+      const adv = hazard.commuter_advisory;
+      const prov = evidence.provenance;
+
+      if (!ass || !adv) return;
+
+      const riskColor = getRiskColor(ass.risk_level);
+
+      // Advisory Card
+      const riskBadge = document.getElementById("advisory-risk-badge");
+      riskBadge.textContent = ass.risk_level;
+      riskBadge.className = `px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${riskColor.badge}`;
+
+      document.getElementById("advisory-headline").textContent = adv.headline;
+      document.getElementById("advisory-location").innerHTML = `
+        <i data-lucide="map-pin" class="w-3 h-3 text-slate-500"></i>
+        <span>${adv.location_title}</span>
+      `;
+      document.getElementById("advisory-confidence").textContent = `${adv.evidence_confidence} (${ass.confidence_score})`;
+      document.getElementById("advisory-guidance").textContent = adv.commuter_guidance;
+
+      // Time Decay Gauge
+      document.getElementById("freshness-tag").textContent = `${ass.freshness_status} (Last: ${ass.minutes_since_last_evidence}m ago)`;
+      let decayPercent = Math.max(10, 100 - (ass.minutes_since_last_evidence * 1.2));
+      document.getElementById("decay-bar").style.width = `${decayPercent}%`;
+
+      // Matrix Metrics
+      if (prov) {
+        document.getElementById("metric-citizens").textContent = prov.citizen_reports_count;
+        document.getElementById("metric-photos").textContent = prov.photos_count;
+        document.getElementById("metric-responders").textContent = prov.verified_responder_count;
+        document.getElementById("metric-authority").textContent = prov.authority_reports_count;
+        document.getElementById("evidence-count-pill").textContent = `${prov.total_evidence_count} Linked Observations`;
+      }
+
+      // Why Bullets
+      const whyList = document.getElementById("why-bullets-list");
+      whyList.innerHTML = adv.why_points.map(pt => `
+        <li class="flex items-start space-x-2">
+          <span class="text-emerald-400 font-bold">&bull;</span>
+          <span>${pt}</span>
+        </li>
+      `).join("");
+
+      // Observations Timeline
+      const timeline = document.getElementById("observation-timeline");
+      timeline.innerHTML = evidence.observations.map(obs => `
+        <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2.5 text-xs space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold text-slate-200 flex items-center space-x-1.5">
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-mono ${getSourceBadge(obs.source_type)}">${obs.source_type}</span>
+              <span>${obs.source_id}</span>
+            </span>
+            <span class="text-[10px] text-slate-500 font-mono">${formatTime(obs.observed_at)}</span>
+          </div>
+          <p class="text-slate-300">${obs.raw_content}</p>
+          ${obs.media_url ? `
+            <div class="mt-1.5 pt-1.5 border-t border-slate-800 flex items-center space-x-1 text-[11px] text-cyan-400">
+              <i data-lucide="image" class="w-3 h-3"></i>
+              <a href="${obs.media_url}" target="_blank" class="hover:underline">View Authenticated Photographic Proof</a>
+            </div>
+          ` : ''}
+        </div>
+      `).join("");
+
+      lucide.createIcons();
+    }
+
+    async function fetchSimulationState() {
+      try {
+        const res = await fetch("/api/v1/simulation/state");
+        if (res.ok) {
+          const state = await res.json();
+          document.getElementById("sim-clock-display").textContent = new Date(state.current_sim_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          const stepNum = state.scenario_state.current_step;
+          document.getElementById("scenario-step-pill").textContent = `Silk Board Cloudburst (Step ${stepNum}/5)`;
+        }
+      } catch (err) {
+        console.error("Simulation fetch failed", err);
+      }
+    }
+
+    async function stepSimulation() {
+      try {
+        const res = await fetch("/api/v1/simulation/step", { method: "POST" });
+        if (res.ok) {
+          const data = await res.json();
+          fetchHazards();
+          fetchSimulationState();
+          fetchAuditLogs();
+        }
+      } catch (err) {
+        console.error("Step failed", err);
+      }
+    }
+
+    async function advanceSimTime(min) {
+      try {
+        await fetch("/api/v1/simulation/time", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ minutes: min })
+        });
+        fetchHazards();
+        fetchSimulationState();
+        fetchAuditLogs();
+      } catch (err) {
+        console.error("Time advance failed", err);
+      }
+    }
+
+    async function resetSimulation() {
+      try {
+        await fetch("/api/v1/simulation/reset", { method: "POST" });
+        selectedHazardId = null;
+        fetchHazards();
+        fetchSimulationState();
+        fetchAuditLogs();
+      } catch (err) {
+        console.error("Reset failed", err);
+      }
+    }
+
+    async function simulateVerification(isAuthorized) {
+      if (!selectedHazardId) {
+        alert("Please select a hazard event from the list first.");
+        return;
+      }
+
+      const payload = isAuthorized ? {
+        principal_id: "btp_officer_gowda",
+        principal_role: "VerifiedResponder",
+        display_name: "Sub-Inspector Gowda",
+        agency: "Bengaluru Traffic Police",
+        verification_notes: "Officer on ground confirms road flooded, barricades placed.",
+        target_status: "VERIFIED"
+      } : {
+        principal_id: "citizen_unauthorized",
+        principal_role: "Citizen",
+        display_name: "Ramesh Citizen",
+        verification_notes: "Attempting to change status as citizen without permissions",
+        target_status: "VERIFIED"
+      };
+
+      try {
+        const res = await fetch(`/api/v1/hazards/${selectedHazardId}/verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert(`CEDAR ALLOW: ${payload.display_name} verified the hazard.`);
+          fetchHazards();
+        } else {
+          alert(`CEDAR DENIED (HTTP ${res.status}):\n${data.detail.message || data.detail.error}`);
+        }
+        fetchAuditLogs();
+      } catch (err) {
+        alert("Verification error: " + err.message);
+      }
+    }
+
+    async function fetchAuditLogs() {
+      try {
+        const res = await fetch("/api/v1/audit/logs?limit=8");
+        if (res.ok) {
+          const logs = await res.json();
+          const container = document.getElementById("audit-log-container");
+          if (logs.length > 0) {
+            document.getElementById("cedar-last-decision").textContent = logs[0].decision;
+            document.getElementById("cedar-last-decision").className = logs[0].decision === "ALLOW" || logs[0].decision === "Allow" ? "font-bold font-mono text-emerald-400" : "font-bold font-mono text-rose-400";
+            document.getElementById("cedar-last-reason").textContent = logs[0].details.reason || logs[0].action;
+          }
+
+          container.innerHTML = logs.map(l => `
+            <div class="bg-slate-950/60 p-1.5 rounded border border-slate-800 flex items-center justify-between">
+              <div>
+                <span class="text-slate-400 font-semibold">${l.action}</span>
+                <span class="text-slate-500 block">${l.principal_id}</span>
+              </div>
+              <span class="px-1 py-0.5 rounded text-[9px] font-bold ${l.decision === 'Allow' || l.decision === 'ALLOW' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">
+                ${l.decision}
+              </span>
+            </div>
+          `).join("");
+        }
+      } catch (err) {
+        console.error("Audit fetch failed", err);
+      }
+    }
+
+    async function handleObservationSubmit(e) {
+      e.preventDefault();
+      const content = document.getElementById("form-content").value;
+      const role = document.getElementById("form-role").value;
+      const evidenceType = document.getElementById("form-evidence-type").value;
+      const photoUrl = document.getElementById("form-photo-url").value;
+
+      const payload = {
+        principal_id: `user_${role.toLowerCase()}`,
+        principal_role: role,
+        display_name: role === "Citizen" ? "Commuter" : "Officer",
+        raw_content: content,
+        source_type: role === "Citizen" ? "CITIZEN" : (role === "VerifiedResponder" ? "VERIFIED_RESPONDER" : "OFFICIAL_AUTHORITY"),
+        evidence_type: evidenceType,
+        media_url: photoUrl || null,
+        is_simulated: false,
+      };
+
+      try {
+        const res = await fetch("/api/v1/observations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          closeSubmitModal();
+          document.getElementById("form-content").value = "";
+          fetchHazards();
+          fetchAuditLogs();
+          selectHazard(data.event_id);
+        } else {
+          alert(`Error: ${data.detail.error || data.detail}`);
+        }
+      } catch (err) {
+        alert("Submission failed: " + err.message);
+      }
+    }
+
+    function openSubmitModal() {
+      document.getElementById("submit-modal").classList.remove("hidden");
+    }
+
+    function closeSubmitModal() {
+      document.getElementById("submit-modal").classList.add("hidden");
+    }
+
+    function triggerSimulationModal() {
+      stepSimulation();
+    }
+
+    function getRiskColor(level) {
+      switch (level) {
+        case "CRITICAL":
+          return { badge: "bg-rose-500/20 text-rose-400 border border-rose-500/30" };
+        case "HIGH":
+          return { badge: "bg-orange-500/20 text-orange-400 border border-orange-500/30" };
+        case "ELEVATED":
+          return { badge: "bg-amber-500/20 text-amber-400 border border-amber-500/30" };
+        case "CLEARED":
+          return { badge: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" };
+        default:
+          return { badge: "bg-slate-500/20 text-slate-400 border border-slate-500/30" };
+      }
+    }
+
+    function getSourceBadge(source) {
+      switch (source) {
+        case "OFFICIAL_AUTHORITY": return "bg-emerald-500/10 text-emerald-400";
+        case "VERIFIED_RESPONDER": return "bg-purple-500/10 text-purple-400";
+        case "SENSOR": return "bg-cyan-500/10 text-cyan-400";
+        default: return "bg-slate-700 text-slate-300";
+      }
+    }
+
+    function formatTime(iso) {
+      try {
+        return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } catch (e) {
+        return iso;
+      }
+    }
+  </script>
+</body>
+</html>

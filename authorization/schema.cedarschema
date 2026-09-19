@@ -1,0 +1,117 @@
+{
+  "": {
+    "entityTypes": {
+      "User": {
+        "memberOfTypes": ["Role"],
+        "shape": {
+          "type": "Record",
+          "attributes": {
+            "displayName": { "type": "String" },
+            "agency": { "type": "String", "required": false }
+          }
+        }
+      },
+      "Role": {
+        "memberOfTypes": [],
+        "shape": {
+          "type": "Record",
+          "attributes": {}
+        }
+      },
+      "HazardEvent": {
+        "memberOfTypes": [],
+        "shape": {
+          "type": "Record",
+          "attributes": {
+            "hazardType": { "type": "String" },
+            "status": { "type": "String" }
+          }
+        }
+      },
+      "Observation": {
+        "memberOfTypes": [],
+        "shape": {
+          "type": "Record",
+          "attributes": {
+            "sourceType": { "type": "String" }
+          }
+        }
+      },
+      "SystemResource": {
+        "memberOfTypes": [],
+        "shape": {
+          "type": "Record",
+          "attributes": {}
+        }
+      }
+    },
+    "actions": {
+      "SubmitObservation": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["Observation", "HazardEvent", "SystemResource"]
+        }
+      },
+      "ViewHazards": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["HazardEvent", "SystemResource"]
+        }
+      },
+      "ViewEvidence": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["HazardEvent", "Observation", "SystemResource"]
+        }
+      },
+      "VerifyHazard": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["HazardEvent", "Observation"]
+        }
+      },
+      "SubmitClearance": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["HazardEvent", "SystemResource"]
+        }
+      },
+      "PublishAdvisory": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["HazardEvent", "SystemResource"]
+        }
+      },
+      "DismissHazard": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["HazardEvent"]
+        }
+      },
+      "AdvanceSimulationTime": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["SystemResource"]
+        }
+      },
+      "EvaluateAssessment": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["HazardEvent", "SystemResource"]
+        }
+      },
+      "CorrelateEvent": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["Observation", "HazardEvent"]
+        }
+      },
+      "IndexSearch": {
+        "appliesTo": {
+          "principalTypes": ["User"],
+          "resourceTypes": ["HazardEvent", "SystemResource"]
+        }
+      }
+    }
+  }
+}
