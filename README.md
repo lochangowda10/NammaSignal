@@ -150,15 +150,20 @@ Confidence is calculated via non-linear corroboration across independent reporti
 
 ---
 
-## 7. Geospatial Intelligence OS (Command Center UI)
+## 7. Evidence Console (Operator UI)
 
-NammaSignal features a production-grade, multi-view Geospatial Intelligence Command Center inspired by enterprise systems like Palantir Foundry. It rejects generic single-page dashboards in favor of a professional, modular interface designed for crisis operations.
+NammaSignal's interface is an **Evidence Console** — a typographic, monospace-first intelligence instrument, not a generic analytics dashboard. It is designed around one principle: *every number on screen is computed by the domain core at request time — nothing is hand-set.*
 
-### Command Center Modules:
-1. **Tactical Radar (Map)**: A Leaflet.js-powered dark mode cartographic view pinpointing live hazard locations and severity across Bengaluru.
-2. **Evidence Fusion Lab**: Interactive Chart.js visualizations demonstrating the deterministic mathematical decay of evidence (exponential half-life) over time.
-3. **Zero-Trust Studio**: A live AWS Cedar policy sandbox allowing users to test authorization rules in real-time.
-4. **Agents Stream**: An interactive testbed for AWS Strands agents to test prompt injection defenses and vernacular interpretation.
+### Console Layout
+* **Case Docket (left)** — live rank-ordered list of correlated hazard events by calibrated risk, with confidence scores and status.
+* **Tactical Radar (center)** — Leaflet dark-cartographic radar of Bengaluru's 11 monitored arterial hotspots; pulsing markers are live correlated hazard events colored by risk level.
+* **Evidence Dossier (right)** — per-case deep view: the commuter advisory, a **Fusion Reconstruction table** showing the exact `W_src × W_time × W_sev` arithmetic behind the confidence score (including net hazard mass after clearance subtraction), provenance tally, the immutable ground-evidence trail, and Cedar-governed verification actions.
+
+### Console Modules
+1. **Signal Ledger** — an append-only narration of every authorization decision, agent interpretation and assessment recompute, mirrored live from the server audit trail.
+2. **AWS Cedar · Zero-Trust Studio** — the active policy set rendered inline, one-click live probes (Citizen → expect DENY, Responder → expect ALLOW) against the real Rust-backed Cedar engine, and the raw audit log.
+3. **AWS Strands · Agents Lab** — side-by-side stateless interpretation runs: vernacular Bengaluru slang parsing versus adversarial prompt-injection neutralization, diffed on structured output.
+4. **Fusion Math** — interactive half-life decay and corroboration sliders wired to the exact formulas from `domain/evidence_fusion.py` and `domain/time_decay.py`, plus the full source-trust and severity weighting tables.
 
 ---
 
@@ -196,7 +201,7 @@ NammaSignal features a comprehensive automated test suite covering unit math, Ce
 python -m pytest tests/ -v
 ```
 
-### Test Coverage (22 / 22 Passing):
+### Test Coverage (41 / 41 Passing):
 * **Unit Tests (`tests/unit/test_domain_math.py`)**: Exact 30-min half-life verification, Haversine spatial distance, multi-source corroboration increase, and clearance cancellation.
 * **Strands Agent Tests (`tests/unit/test_agents.py`)**: Bengaluru slang parsing ("knee deep near silk board"), adversarial prompt injection neutralization, and evidence analysis.
 * **AWS Cedar Policy Tests (`tests/authorization/test_cedar_policies.py`)**: Complete RBAC test matrix, Citizen submission allowance, Citizen verification rejection, Responder permissions, and System least-privilege.
