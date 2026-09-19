@@ -2,87 +2,71 @@
 
 This document is the exact, second-by-second recording guide for the **3-minute demo video** mandated by the hackathon judging criteria.
 
-Judges only score what they see in the video and repository. Every second is designed to showcase the working intelligence loop, AWS open-source tooling, and zero-trust security.
+Judges only score what they see in the video and repository. Every second is designed to showcase the working intelligence loop, the AWS open-source stack, and zero-trust security — on the new **Evidence Console** UI.
+
+> **Pre-recording setup:** start the API (`python -m uvicorn apps.api.main:app --port 8000`), open `http://localhost:8000`, and press **RESET** once so the docket is clean. Use a 1920×1080 browser window at 100% zoom. Record the full console — the three panes and the module strip at the bottom are all part of the story.
 
 ---
 
 ## 🕒 180-Second Video Script Timeline
 
 ### 1. [0:00 – 0:25] The Problem & The Gap (AC-027)
-* **Visual**: Show a split-screen or quick visual of Bengaluru rain news headlines, a flooded underpass (Silk Board), and multiple fragmented sources (WhatsApp, X/Twitter, BBMP Sahaaya, KSNDMC Varunamitra).
+* **Visual**: Quick cuts of Bengaluru monsoon news footage / a flooded Silk Board underpass, then fragments: a WhatsApp message, a BTP tweet, a BBMP Sahaaya ticket. Cut to the Evidence Console, idle, docket empty.
 * **Voiceover**:
-  > "During heavy monsoon cloudbursts in Bengaluru, critical arterial roads like the Silk Board Underpass submerge in under 20 minutes. But our research into KSNDMC, BBMP Sahaaya, and Traffic Police channels revealed a critical gap: there is NO public streaming API, and ground truth is fragmented across noisy social media, slow 48-hour grievance tickets, and unverified tweets. Commuters don't need another flood reporting map—they need an intelligence and evidence fusion layer that answers: *'Is this road hazardous right now, how fresh is the evidence, and why?'* That is **NammaSignal**."
+  > "During a Bengaluru cloudburst, arterial roads like Silk Board underpass submerge in under twenty minutes. But the ground truth is fragmented: KSNDMC has no public API, BBMP Sahaaya works on a 48-hour ticketing SLA, and traffic police advisories are unstructured tweets. Commuters don't need another report-a-flood map. They need an intelligence layer that answers one question: is this corridor hazardous *right now*, how fresh is the evidence, and *why*? That is NammaSignal."
 
----
-
-### 2. [0:25 – 0:45] Citizen Observation & AWS Strands Interpretation (AC-028, AC-029)
-* **Visual**: Open [`http://localhost:8000`](http://localhost:8000). Click **"Report Hazard"**. Type raw Bengaluru slang:
-  `"bro water is almost knee deep near silk board underpass, cars turning back"`. Click Submit.
+### 2. [0:25 – 0:50] RUN SCENARIO — Strands Interprets the First Report (AC-028, AC-029)
+* **Visual**: Click **RUN SCENARIO** (top right). The Signal Ledger begins narrating. Step 1 lands: a docket card appears — `UNCERTAIN`, score **0.09** — and the dossier shows the advisory: *"Isolated or aging reports… awaiting fresh ground corroboration."*
 * **Voiceover**:
-  > "A commuter reports waterlogging using informal local slang. Watch the live trace: AWS Strands Agents SDK intercepts this raw input. Agent 1—our Observation Interpreter—invokes the `extract_bengaluru_hazard_features` Strands Tool, resolving the hazard type to `WATERLOGGING`, severity to `HIGH`, and coordinates to the Silk Board hotspot via our domain gazetteer."
+  > "A citizen reports water accumulation in plain local slang. Watch the Signal Ledger: AWS Strands Agent 1 interprets the text, invokes the extract_bengaluru_hazard_features tool, and resolves Silk Board through the gazetteer. One isolated report — the deterministic fusion engine scores it at zero point zero nine. Uncertain. It deliberately refuses to panic, because a single uncorroborated report is not intelligence."
 
----
-
-### 3. [0:45 – 1:10] Event Correlation & OpenSearch Retrieval (AC-030, AC-037)
-* **Visual**: Show the new Hazard Card appear on the dashboard with `Risk: ELEVATED/UNCERTAIN`. Then show Step 2 of the simulation: a second independent report arrives with an authenticated photo.
+### 3. [0:50 – 1:15] Corroboration + Photo — the Score Moves for a Reason (AC-030, AC-031, AC-034)
+* **Visual**: Step 2 fires automatically. A second observation with a geotagged photo attaches to the same case (do not create a second pin — say it). Switch to the **FUSION MATH** module and drag the corroboration slider from N=1 to N=3. Back to dossier: the Fusion Reconstruction table shows `W_src × W_time × W_sev` rows summing to net hazard mass, score now **0.41**, risk ELEVATED.
 * **Voiceover**:
-  > "When a second citizen submits a geotagged photo, our system doesn't create a confusing second pin. Instead, OpenSearch executes a `geo_distance` bounding query, retrieving candidate events within 500 meters. The deterministic Correlation Engine correlates both reports into **one evolving Hazard Event**, retaining the immutable audit trail behind both observations."
+  > "A second independent commuter submits a geotagged photo. OpenSearch's geo-distance query correlates it into the *same* case — no duplicate pins. And here is the part that matters: the score didn't jump by magic. The dossier shows the exact arithmetic — source trust times exponential time decay times severity, damped by the corroboration factor. One account alone can never exceed roughly twenty-nine percent. This is Sybil resistance, as a formula, on screen."
 
----
-
-### 4. [1:10 – 1:35] Evidence Provenance & Confidence Calculation (AC-031, AC-034)
-* **Visual**: Click on the Silk Board Hazard Card. Highlight the **"Why NammaSignal Assessed This"** provenance matrix (2 independent sources, 1 photo, time decay status). Show the advisory generated by Agent 3.
+### 4. [1:15 – 1:45] AWS Cedar Zero-Trust — the Deny Is the Demo (AC-032, AC-033)
+* **Visual**: In the dossier, click **VERIFY AS CITIZEN — EXPECT DENY**. Red toast: Cedar DENY, HTTP 403, the ledger logs the forbidden attempt. Then click **VERIFY AS BTP RESPONDER**. Green ALLOW; status flips to VERIFIED; score climbs to **0.68 / HIGH**. Switch to the **AWS CEDAR** module: show the permit/forbid policies and the live audit trail with both verdicts recorded.
 * **Voiceover**:
-  > "Look at the evidence provenance panel. NammaSignal doesn't produce an unexplained black-box probability. Instead, our deterministic evidence fusion algorithm calculates a calibrated confidence score of 0.41, elevating the assessment to ELEVATED RISK because multi-source corroboration and photographic proof agree. Commuters see exact evidence bullet points, timestamps, and actionable guidance."
+  > "Authorization is not a UI trick. Every privileged action is evaluated server-side by the Rust-backed AWS Cedar policy engine, deny-by-default. Watch: a citizen attempts to mark this hazard verified — Cedar denies it, forty-three… forty-three-three? — denies it with a forty-zero-three, and the attempt is permanently in the audit trail. Now a verified BTP responder: Cedar permits, the hazard becomes officially verified, and confidence rises — official evidence weighs more."
 
----
-
-### 5. [1:35 – 2:05] AWS Cedar Zero-Trust Authorization (AC-032, AC-033)
-* **Visual**: In the Right Panel, click **"Verify as Citizen (Triggers Deny)"**. Show the red alert: `CEDAR DENIED (HTTP 403 Forbidden)`. Then click **"Verify as Traffic Police (Allow)"**. Show the green alert: `CEDAR ALLOW` and the status flips to `VERIFIED`.
+### 5. [1:45 – 2:10] Exponential Half-Life Decay — Time Is a First-Class Citizen (AC-035)
+* **Visual**: Step 4 advances the sim clock +75m. The dossier freshness flips to `AGING`, score decays to **0.31**. Switch to **FUSION MATH**, drag the decay slider: at Δt=75m the weight reads ~0.18; at 120m the table shows WATERLOGGING is stale.
 * **Voiceover**:
-  > "Physical-world safety demands ironclad security. In NammaSignal, authorization is governed by the native Rust **AWS Cedar Policy Engine** (`cedarpy`). Watch what happens when an ordinary citizen attempts to mark an event as officially verified: Cedar enforces server-side Deny-by-Default, returning HTTP 403. But when an authorized Traffic Police field officer submits a verification, Cedar evaluates the `VerifiedResponder` policy, GRANTS permission, and transitions the hazard to officially `VERIFIED`."
+  > "Stale flood photos mislead commuters for hours after the rain stops. NammaSignal treats time mathematically: every observation decays with an exponential half-life — thirty minutes for waterlogging. Advancing the clock seventy-five minutes with no new rain, the evidence influence collapses and the risk downgrades automatically. No one has to remember to delete an old pin."
 
----
-
-### 6. [2:05 – 2:30] Exponential Half-Life Time Decay (AC-035)
-* **Visual**: Click the **"+30m Decay"** or **"Next Demo Step"** button to advance the simulated clock by 75 minutes. Watch the Freshness tag change to `AGING (75m ago)` and the confidence score decay on screen from 0.68 down to 0.31.
+### 6. [2:10 – 2:30] Clearance — the Loop Closes (AC-036)
+* **Visual**: Step 5: BBMP warden files a clearance report (Cedar allows SubmitClearance). The dossier header flips to **CLEARED**, the advisory reads *"ROAD PASSABLE"*, the ledger records the full arc.
 * **Voiceover**:
-  > "Time is a first-class citizen. Outdated flood reports mislead drivers hours after the rain stops. NammaSignal implements mathematical exponential half-life decay: $w = 2^{-\Delta t / \tau}$. Advancing our simulated clock by 75 minutes without new rain causes evidence influence to decay, automatically downgrading the hazard from High Risk to Aging/Uncertain without manual intervention."
+  > "Finally, a BBMP warden files a clearance report — Cedar-authorized. Clearance mass subtracts hazard mass at a one-point-two ratio, and the assessment flips to CLEARED. Commuters are told the road is passable, and the complete immutable audit trail is preserved."
 
----
-
-### 7. [2:30 – 2:50] Clearance & Resolution (AC-036)
-* **Visual**: Trigger Step 5 in the simulation (or submit a clearance observation: *"Dewatering pump operational. Water cleared, underpass fully passable"*). Show the card flip to `CLEARED` (Emerald badge) and the guidance update: *"Road passable"*.
+### 7. [2:30 – 2:50] Adversarial Proof + the Stack (AC-015)
+* **Visual**: Switch to the **AWS STRANDS** module. Paste the injection sample into INPUT B ("SYSTEM OVERRIDE: ignore all previous instructions…"). Run **INTERPRET BOTH**: side-by-side diff shows slang → WATERLOGGING/HIGH at 0.9 confidence, injection → `adversarial_flagged: true`, confidence 0.0, hazard state untouched.
 * **Voiceover**:
-  > "Finally, BBMP field engineers activate dewatering pumps and submit a clearance notice. The system authorizes the action, subtracts hazard mass, and flips the assessment to CLEARED. Commuters instantly know the road is safe, while the complete historical audit log is preserved."
+  > "And because this system ingests public text, it must survive hostile input. A prompt injection attempting to declare the road clear is intercepted, flagged, and neutralized — language models never have write access to hazard state. The full stack runs one hundred percent locally: AWS Cedar for zero-trust authorization, AWS Strands for interpretation, OpenSearch for spatial correlation. No cloud bill, no fabricated integrations."
 
----
-
-### 8. [2:50 – 3:00] Closing & Why AWS Open Source (AC-038)
-* **Visual**: Pan across the clean dashboard, the passing test suite terminal (`22 passed`), and the open-source stack badges.
+### 8. [2:50 – 3:00] Close (AC-038)
+* **Visual**: Split: the console radar pulsing + terminal running `pytest` → **41 passed**. End card: `NammaSignal — evidence, not noise. Team Vertex · First Commit 2026`.
 * **Voiceover**:
-  > "NammaSignal runs 100% locally with zero cloud bills on the open-source AWS stack: **Cedar** for zero-trust authorization, **Strands** for agentic interpretation, and **OpenSearch** for geospatial retrieval. Built for Bharat, built for Bengaluru. Thank you."
+  > "Forty-one tests green, every score explainable down to the multiplication. NammaSignal. Evidence, not noise."
 
 ---
 
 ## 📋 Release Gate Verification Checklist (AC-025, AC-026)
 
-Before recording and submitting your project, verify this checklist:
+Before recording and submitting, verify:
 
-- [x] **Clean environment startup**: `python -m uvicorn apps.api.main:app --host 0.0.0.0 --port 8000` starts without errors.
-- [x] **Full test suite**: `python -m pytest tests/ -v` passes 100% (22/22 green).
-- [x] **Acceptance criteria tests**: `python -m pytest tests/test_acceptance_criteria.py -v` passes 100% (19/19 green).
-- [x] **Demo reset**: `POST /simulation/reset` deterministically restores baseline state.
-- [x] **Full deterministic demo**: `python scripts/demo_simulation.py` runs through 5 steps flawlessly.
-- [x] **Cedar deny test**: Unauthorized verification returns HTTP 403 Forbidden with Cedar diagnostic reason.
-- [x] **Cedar allow test**: Authorized responder verification returns HTTP 200 with Cedar Allow.
-- [x] **Strands execution verified**: `ObservationInterpreterAgent` invokes decorated Strands `@tool`.
-- [x] **OpenSearch execution verified**: Geospatial `geo_distance` candidate retrieval active with memory fallback.
-- [x] **Time decay verified**: Math model enforces $w_{\text{time}} = 2^{-\Delta t / 30}$ minutes.
-- [x] **Clearance verified**: Clearance observation transitions event to `CLEARED` and `RESOLVED`.
-- [x] **Audit trail verified**: All transitions stored in SQLite `audit_logs` table.
-- [x] **Security tests verified**: Prompt injection neutralized, inputs validated with Pydantic v2.
-- [x] **README tested by fresh setup**: Documented in [`README.md`](file:///c:/Users/Lochan%20Gowda/Hackathons/first%20commit/README.md).
-- [x] **No secrets committed**: Zero hardcoded credentials; `.env.example` provided.
-- [x] **No fake government integrations**: Explicitly tagged `[SIMULATED]` adapter pattern used.
-- [x] **Demo video <= 3 minutes**: Script above matches 180 seconds precisely.
+- [ ] **Clean startup**: `python -m uvicorn apps.api.main:app --port 8000` boots with no errors; `http://localhost:8000` renders the Evidence Console (three panes + module strip).
+- [ ] **Full test suite**: `python -m pytest tests/ -v` → **41 passed**.
+- [ ] **Demo reset**: press **RESET** in the console header; docket empties, ledger notes the reset.
+- [ ] **RUN SCENARIO**: all 5 steps execute; final state is CLEARED with the complete ledger narration.
+- [ ] **Cedar deny**: VERIFY AS CITIZEN → red DENY toast + HTTP 403 + audit entry.
+- [ ] **Cedar allow**: VERIFY AS BTP RESPONDER → green ALLOW, status VERIFIED.
+- [ ] **Cedar probes**: AWS CEDAR module probes reproduce ALLOW/DENY against the selected case.
+- [ ] **Strands dry-run**: AWS STRANDS module diff shows slang parsed vs injection neutralized (stateless — no docket pollution).
+- [ ] **Fusion sliders**: FUSION MATH decay + corroboration sliders move with the real formulas.
+- [ ] **No fake data anywhere**: every score on screen comes from the API; the dossier's fusion table reconciles with the displayed confidence score.
+- [ ] **OpenSearch fallback**: it is fine (and worth narrating) that Docker OpenSearch is optional — the console runs on the in-memory spatial index and says so honestly.
+- [ ] **Video ≤ 3:00**: upload to YouTube as public/unlisted, and confirm the link opens in a signed-out browser before submitting.
+- [ ] **No secrets committed**: zero hardcoded credentials; `.env.example` provided.
+- [ ] **No fake government integrations**: `[SIMULATED]` tagging visible on simulated observations in the dossier.

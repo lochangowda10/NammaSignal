@@ -22,6 +22,7 @@ from apps.api.dependencies import (
     get_search_manager,
     get_evidence_analyst,
     get_advisory_generator,
+    get_current_user,
 )
 from persistence.repository import EventRepository
 from authorization.evaluator import CedarPolicyEngine
@@ -118,6 +119,7 @@ def verify_hazard(
     repo: EventRepository = Depends(get_event_repository),
     cedar: CedarPolicyEngine = Depends(get_cedar_engine),
     search: OpenSearchManager = Depends(get_search_manager),
+    current_user: Principal = Depends(get_current_user),
 ):
     event = repo.get_hazard_event(event_id)
     if not event:
@@ -126,13 +128,15 @@ def verify_hazard(
             detail=f"Hazard event {event_id} not found",
         )
 
-    principal = Principal(
-        id=req.principal_id,
-        role=req.principal_role,
-        display_name=req.display_name,
-        badge_number=req.badge_number,
-        agency=req.agency,
-    )
+    # Use authenticated user instead of self-declared principal info
+    principal = current_user
+
+    # Override request fields with authenticated user info for security
+    req.principal_id = principal.id
+    req.principal_role = principal.role
+    req.display_name = principal.display_name
+    req.badge_number = principal.badge_number
+    req.agency = principal.agency
 
     # 1. AWS Cedar Authorization Boundary Check
     auth_decision = cedar.is_authorized(

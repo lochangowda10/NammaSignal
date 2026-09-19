@@ -6,7 +6,7 @@ Exposes structured audit logs and Cedar authorization trace decisions.
 from typing import Any, Dict, List
 from fastapi import APIRouter, Depends, Query
 
-from apps.api.dependencies import get_event_repository
+from apps.api.dependencies import get_event_repository, get_current_user
 from persistence.repository import EventRepository
 
 router = APIRouter(prefix="/audit", tags=["Audit"])
