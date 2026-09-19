@@ -150,11 +150,23 @@ Confidence is calculated via non-linear corroboration across independent reporti
 
 ---
 
-## 7. Quickstart Guide (Run Locally in 1 Command)
+## 7. Geospatial Intelligence OS (Command Center UI)
+
+NammaSignal features a production-grade, multi-view Geospatial Intelligence Command Center inspired by enterprise systems like Palantir Foundry. It rejects generic single-page dashboards in favor of a professional, modular interface designed for crisis operations.
+
+### Command Center Modules:
+1. **Tactical Radar (Map)**: A Leaflet.js-powered dark mode cartographic view pinpointing live hazard locations and severity across Bengaluru.
+2. **Evidence Fusion Lab**: Interactive Chart.js visualizations demonstrating the deterministic mathematical decay of evidence (exponential half-life) over time.
+3. **Zero-Trust Studio**: A live AWS Cedar policy sandbox allowing users to test authorization rules in real-time.
+4. **Agents Stream**: An interactive testbed for AWS Strands agents to test prompt injection defenses and vernacular interpretation.
+
+---
+
+## 8. Quickstart Guide (Run Locally in 1 Command)
 
 ### Prerequisites
 * Python 3.10+ (tested on Python 3.13)
-* Node.js (optional, web UI is served directly via FastAPI)
+* `uv` package manager (optional, but recommended for speed)
 
 ### One-Command Startup
 Clone the repository and run:
@@ -167,7 +179,7 @@ python -m uvicorn apps.api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Open your browser at:
-👉 **`http://localhost:8000`** (Interactive Command Center UI)
+👉 **`http://localhost:8000`** (Geospatial Intelligence OS)
 👉 **`http://localhost:8000/docs`** (Interactive OpenAPI / Swagger Documentation)
 
 ---
