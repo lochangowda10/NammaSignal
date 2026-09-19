@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from domain.entities import Principal, RoleType, AuditLogEntry
-from apps.api.dependencies import get_simulation_manager, get_cedar_engine, get_event_repository, get_current_user
+from apps.api.dependencies import get_simulation_manager, get_cedar_engine, get_event_repository
 from simulation.scenario_runner import SimulationScenarioManager
 from authorization.evaluator import CedarPolicyEngine
 from persistence.repository import EventRepository
@@ -45,15 +45,8 @@ def advance_simulated_time(
     sim: SimulationScenarioManager = Depends(get_simulation_manager),
     cedar: CedarPolicyEngine = Depends(get_cedar_engine),
     repo: EventRepository = Depends(get_event_repository),
-    current_user: Principal = Depends(get_current_user),
 ):
-    # Use authenticated user instead of self-declared principal info
-    principal = current_user
-
-    # Override request fields with authenticated user info for security
-    req.principal_id = principal.id
-    req.principal_role = principal.role
-
+    principal = Principal(id=req.principal_id, role=req.principal_role, display_name="Admin")
     auth = cedar.is_authorized(principal, "AdvanceSimulationTime", "SystemResource", "clock")
 
     repo.record_audit_log(

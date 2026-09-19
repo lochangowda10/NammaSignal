@@ -1,7 +1,6 @@
 """
 NammaSignal Core API Gateway
-FastAPI application with correlation IDs, CORS, structured logging, Cedar-protected routes,
-authentication, and security enhancements.
+FastAPI application with correlation IDs, CORS, structured logging, and Cedar-protected routes.
 """
 
 import time
@@ -15,8 +14,6 @@ from apps.api.routes.observations import router as observations_router
 from apps.api.routes.hazards import router as hazards_router
 from apps.api.routes.simulation import router as simulation_router
 from apps.api.routes.audit import router as audit_router
-from apps.api.routes.auth import router as auth_router
-from apps.api.security import apply_security_middleware
 from domain.gazetteer import get_all_canonical_landmarks
 
 logging.basicConfig(
@@ -30,9 +27,6 @@ app = FastAPI(
     description="Unified, evidence-backed hazard assessment and fusion platform for Bengaluru road hazards.",
     version="1.0.0",
 )
-
-# Apply security enhancements
-apply_security_middleware(app)
 
 # CORS configuration for local web frontend
 app.add_middleware(
@@ -72,14 +66,12 @@ app.include_router(observations_router, prefix=API_V1_PREFIX)
 app.include_router(hazards_router, prefix=API_V1_PREFIX)
 app.include_router(simulation_router, prefix=API_V1_PREFIX)
 app.include_router(audit_router, prefix=API_V1_PREFIX)
-app.include_router(auth_router, prefix=API_V1_PREFIX)  # Authentication endpoints
 
 # Also mount at root for direct criteria compatibility (e.g. POST /simulation/reset, POST /observations)
 app.include_router(observations_router)
 app.include_router(hazards_router)
 app.include_router(simulation_router)
 app.include_router(audit_router)
-app.include_router(auth_router)  # Auth routes also at root for convenience
 
 
 from pathlib import Path

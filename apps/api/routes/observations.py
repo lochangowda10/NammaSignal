@@ -42,6 +42,24 @@ from agents.evidence_analyst import EvidenceAnalystAgent
 router = APIRouter(prefix="/observations", tags=["Observations"])
 
 
+class InterpretDryRunRequest(BaseModel):
+    """Request for a stateless Strands interpretation preview (no persistence)."""
+    raw_content: str = Field(..., min_length=3, max_length=2000)
+
+
+@router.post("/interpret-dry", response_model=Dict[str, Any])
+def interpret_dry_run(
+    req: InterpretDryRunRequest,
+    interpreter: ObservationInterpreterAgent = Depends(get_interpreter_agent),
+):
+    """
+    Runs Strands Agent 1 (Observation Interpreter) against raw text without
+    persisting any observation or mutating hazard state. Read-only preview.
+    """
+    proposal = interpreter.interpret(req.raw_content)
+    return proposal.model_dump(mode="json")
+
+
 class IngestObservationRequest(BaseModel):
     principal_id: str = Field(default="citizen_anonymous")
     principal_role: RoleType = Field(default=RoleType.CITIZEN)
