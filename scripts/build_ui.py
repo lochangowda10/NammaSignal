@@ -1,214 +1,8 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NammaSignal — Bengaluru Road Hazard Evidence Fusion Engine</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <!-- Tailwind CSS CDN for instant, zero-build rendering -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Leaflet Interactive Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <!-- Chart.js for Mathematical Decay Curves -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
-          },
-          colors: {
-            brand: {
-              50: '#f0fdf4',
-              500: '#10b981',
-              600: '#059669',
-            },
-            cedar: {
-              400: '#a78bfa',
-              500: '#8b5cf6',
-              600: '#7c3aed',
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    body {
-      background-color: #060911;
-      color: #f1f5f9;
-      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-      overflow-x: hidden;
-    }
-    .glass-card {
-      background: rgba(11, 17, 32, 0.78);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-    }
-    .glass-card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-    .glass-nav {
-      background: rgba(6, 9, 17, 0.92);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .leaflet-container {
-      background: #060911 !important;
-      font-family: 'Plus Jakarta Sans', sans-serif !important;
-    }
-    .leaflet-popup-content-wrapper {
-      background: rgba(15, 23, 42, 0.95) !important;
-      color: #f1f5f9 !important;
-      border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      border-radius: 12px !important;
-      backdrop-filter: blur(12px) !important;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8) !important;
-      padding: 0 !important;
-    }
-    .leaflet-popup-content {
-      margin: 12px 14px !important;
-      line-height: 1.4 !important;
-    }
-    .leaflet-popup-tip {
-      background: rgba(15, 23, 42, 0.95) !important;
-    }
-    .leaflet-control-zoom a {
-      background: #0f172a !important;
-      color: #94a3b8 !important;
-      border-color: #334155 !important;
-    }
-    .leaflet-control-zoom a:hover {
-      background: #1e293b !important;
-      color: #f8fafc !important;
-    }
-    /* Custom Scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-    @keyframes pulse-subtle {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.85; transform: scale(1.02); }
-    }
-    .pulse-alert {
-      animation: pulse-subtle 3s infinite ease-in-out;
-    }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-500/20 selection:text-emerald-400">
+# NammaSignal UI Builder Script
+# Assembles the multi-view command center HTML cleanly
+from pathlib import Path
 
-  <!-- ================= TOP NAVIGATION BAR ================= -->
-  <header class="sticky top-0 z-50 glass-nav px-4 lg:px-8 py-3.5 flex items-center justify-between">
-    <div class="flex items-center space-x-3.5">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-0.5 shadow-lg shadow-emerald-500/20 flex items-center justify-center">
-        <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-          <i data-lucide="waves" class="w-5 h-5 text-emerald-400"></i>
-        </div>
-      </div>
-      <div>
-        <div class="flex items-center space-x-2">
-          <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-            NammaSignal
-          </h1>
-          <span class="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">
-            Evidence Fusion Engine
-          </span>
-        </div>
-        <p class="text-xs text-slate-400 font-medium">
-          Bengaluru Road Hazard Intelligence &bull; Build It Track
-        </p>
-      </div>
-    </div>
-
-    <!-- Center Navigation Tabs (The 4 Award-Winning Cockpits) -->
-    <nav class="hidden md:flex items-center p-1 bg-slate-950/80 border border-slate-800 rounded-xl space-x-1">
-      <button onclick="switchTab('map')" id="tab-btn-map" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
-        <i data-lucide="map" class="w-3.5 h-3.5"></i>
-        <span>Geospatial Radar</span>
-      </button>
-
-      <button onclick="switchTab('fusion')" id="tab-btn-fusion" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent">
-        <i data-lucide="git-merge" class="w-3.5 h-3.5"></i>
-        <span>Evidence Fusion Lab</span>
-      </button>
-
-      <button onclick="switchTab('cedar')" id="tab-btn-cedar" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent">
-        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-        <span>AWS Cedar Zero-Trust</span>
-      </button>
-
-      <button onclick="switchTab('agents')" id="tab-btn-agents" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent">
-        <i data-lucide="bot" class="w-3.5 h-3.5"></i>
-        <span>AWS Strands Agents</span>
-      </button>
-    </nav>
-
-    <!-- Right Controls -->
-    <div class="flex items-center space-x-2.5">
-      <button onclick="openSubmitModal()" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition flex items-center space-x-1.5 shadow-md shadow-emerald-500/20">
-        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-        <span>Report Hazard</span>
-      </button>
-      <button onclick="triggerSimulationModal()" class="px-3.5 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 font-semibold text-xs transition flex items-center space-x-1.5">
-        <i data-lucide="play-circle" class="w-4 h-4"></i>
-        <span>Demo Simulation</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- ================= SUB-HEADER / SIMULATION TICKER ================= -->
-  <div class="bg-slate-900/50 border-b border-slate-800/80 px-4 lg:px-8 py-2 flex flex-wrap items-center justify-between text-xs gap-3">
-    <div class="flex items-center space-x-4">
-      <div class="flex items-center space-x-1.5 text-slate-400">
-        <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-500"></i>
-        <span>Simulated Clock:</span>
-        <span id="sim-clock-display" class="font-mono text-slate-200 font-medium">Syncing...</span>
-      </div>
-      <div class="flex items-center space-x-2">
-        <span class="text-slate-500">&bull;</span>
-        <span class="text-slate-400">Simulation Scenario:</span>
-        <span id="scenario-step-pill" class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 font-medium border border-purple-500/20">
-          Silk Board Cloudburst (Ready)
-        </span>
-      </div>
-    </div>
-
-    <div class="flex items-center space-x-2">
-      <button onclick="stepSimulation()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium border border-slate-700 transition flex items-center space-x-1">
-        <i data-lucide="fast-forward" class="w-3 h-3 text-emerald-400"></i>
-        <span>Next Demo Step</span>
-      </button>
-      <button onclick="advanceSimTime(30)" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium border border-slate-700 transition flex items-center space-x-1">
-        <i data-lucide="timer-reset" class="w-3 h-3 text-amber-400"></i>
-        <span>+30m Decay</span>
-      </button>
-      <button onclick="resetSimulation()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Reset Simulation">
-        <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
-      </button>
-    </div>
-  </div>
-
-  
+BODY_VIEWS = """
   <!-- ================= VIEW CONTAINER ================= -->
   <main class="flex-1 relative overflow-hidden flex flex-col">
 
@@ -665,70 +459,9 @@
       </div>
     </section>
   </main>
-<!-- ================= SUBMIT OBSERVATION MODAL ================= -->
-  <div id="submit-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="glass-card bg-slate-900 border border-slate-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <div class="flex items-center space-x-2">
-          <i data-lucide="alert-circle" class="w-5 h-5 text-emerald-400"></i>
-          <h3 class="font-bold text-base text-white">Report Road Hazard / Waterlogging</h3>
-        </div>
-        <button onclick="closeSubmitModal()" class="text-slate-400 hover:text-white transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
+"""
 
-      <form id="observation-form" onsubmit="handleObservationSubmit(event)" class="mt-4 space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">What did you observe? (Vernacular / Slang supported)</label>
-          <textarea id="form-content" rows="3" required placeholder="e.g. Bro knee deep water near Silk Board underpass, cars turning around" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"></textarea>
-          <p class="text-[10px] text-slate-400 mt-1">AWS Strands Observation Interpreter will automatically extract hazard type, severity, and landmark coordinates.</p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Your Role</label>
-            <select id="form-role" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-              <option value="Citizen">Citizen (Public Contributor)</option>
-              <option value="VerifiedResponder">Verified Responder (BTP/BBMP)</option>
-              <option value="OfficialAuthority">Official Authority (Control Room)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Evidence Type</label>
-            <select id="form-evidence-type" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-              <option value="GROUND_OBSERVATION">Text Observation</option>
-              <option value="PHOTO">Photo / Visual Proof</option>
-              <option value="CLEARANCE_REPORT">Road Clearance (Water Drained)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Select Hotspot (Optional)</label>
-            <select id="form-hotspot-select" onchange="applyHotspotToForm()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-              <option value="">Auto-Detect from Text</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Photo URL (Optional)</label>
-            <input id="form-photo-url" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500" />
-          </div>
-        </div>
-
-        <div class="pt-2 flex items-center justify-end space-x-2">
-          <button type="button" onclick="closeSubmitModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition">Cancel</button>
-          <button type="submit" id="form-submit-btn" class="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-emerald-500/20">
-            <span>Submit Observation</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= CLIENT LOGIC JAVASCRIPT ================= -->
-  <script>
+JS_REPLACEMENT = """
     let activeHazards = [];
     let selectedHazardId = null;
     let canonicalLandmarks = [];
@@ -1167,7 +900,7 @@
           alert(`CEDAR ALLOW: ${payload.display_name} verified the hazard.`);
           fetchHazards();
         } else {
-          alert(`CEDAR DENIED (HTTP ${res.status}):\n${data.detail.message || data.detail.error}`);
+          alert(`CEDAR DENIED (HTTP ${res.status}):\\n${data.detail.message || data.detail.error}`);
         }
         fetchAuditLogs();
       } catch (err) {
@@ -1187,11 +920,11 @@
       if (isForbidden) {
         verdict.textContent = "DENY (Cedar Policy Forbid)";
         verdict.className = "font-bold text-rose-400";
-        explanation.textContent = `FORBIDDEN: Cedar policy strictly forbids Role::"Citizen" from executing Action::"${action}". Non-officials cannot mutate verified states.`;
+        explanation.textContent = `FORBIDDEN: Cedar policy strictly forbids Role::\"Citizen\" from executing Action::\"${action}\". Non-officials cannot mutate verified states.`;
       } else {
         verdict.textContent = "ALLOW (Cedar Policy Permit)";
         verdict.className = "font-bold text-emerald-400";
-        explanation.textContent = `PERMITTED: Role::"${role}" is explicitly authorized to execute Action::"${action}" under Cedar zero-trust rules.`;
+        explanation.textContent = `PERMITTED: Role::\"${role}\" is explicitly authorized to execute Action::\"${action}\" under Cedar zero-trust rules.`;
       }
     }
 
@@ -1339,6 +1072,31 @@
         return iso;
       }
     }
-</script>
-</body>
-</html>
+"""
+
+def build():
+    path = Path("apps/web/index.html")
+    content = path.read_text(encoding="utf-8")
+    
+    # 1. Replace main workspace with multi-tab cockpit views
+    start_tag = "<!-- ================= MAIN THREE-COLUMN WORKSPACE ================= -->"
+    end_tag = "<!-- ================= SUBMIT OBSERVATION MODAL ================= -->"
+    
+    pre = content[:content.find(start_tag)]
+    post = content[content.find(end_tag):]
+    
+    new_content = pre + BODY_VIEWS + post
+    
+    # 2. Replace JS logic
+    js_start = "<!-- ================= CLIENT LOGIC JAVASCRIPT ================= -->\n  <script>"
+    js_end = "</script>\n</body>"
+    
+    pre_js = new_content[:new_content.find(js_start) + len(js_start)]
+    post_js = new_content[new_content.find(js_end):]
+    
+    final_html = pre_js + JS_REPLACEMENT + post_js
+    path.write_text(final_html, encoding="utf-8")
+    print("SUCCESS: index.html reconstructed with Multi-View Command Center!")
+
+if __name__ == "__main__":
+    build()
